@@ -40,6 +40,8 @@ INSTALLED_APPS = [
       #3rd apps
     'rest_framework',
     #LOCAL APPS
+    'initial',
+    'places',
 
 ]
 
