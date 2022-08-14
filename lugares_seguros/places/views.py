@@ -1,13 +1,16 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from places.models import Place   #import model
 from places.serializers import PlaceSerializer # import serializers
 
-
 #First View
 
 class PlaceView(APIView):
+
+    parser_classes = (MultiPartParser, FormParser)
+
     def get(self,request):
         #Query --> Petición base de datos
         #QuerySet --> Resultado de una Query. Lista de Objetos.
@@ -19,6 +22,11 @@ class PlaceView(APIView):
     
 
     def post(self, request):
+        try:
+            file = request.data['image']
+            request.data['image'] = file
+        except KeyError:
+            file = None
         serializer = PlaceSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
