@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from places.models import Place   #import model
-from places.serializers import PlaceSerializer # import serializers
+from places.serializers import PlaceSerializer,PlaceListCommentSerializer # import serializers
 
 #First View
 
@@ -16,7 +16,6 @@ class PlaceView(APIView):
         #QuerySet --> Resultado de una Query. Lista de Objetos.
 
         places  = Place.objects.all ()
-        print(places)
         serializer = PlaceSerializer(places, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -34,14 +33,25 @@ class PlaceView(APIView):
 
 
 class PlaceSingleView(APIView):
-    def put(self,request,id):
-        place = Place.objects.get(id=id)
-        serializer= PlaceSerializer(place, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def get(self, request, id):
+        place = Place.objects.filter(id = id).first()
+        if place is None:
+            return Response({'error': 'Bad Request'}, status = status.HTTP_400_BAD_REQUEST)
+        serializer = PlaceListCommentSerializer(place)
+        return Response(serializer.data, status = status.HTTP_200_OK)
+
+    def patch(self, request, id):
+        place = Place.objects.filter(id = id).first()
+        if Place is None:
+            return Response({'error': 'Bad Request.'}, status = status.HTTP_400_BAD_REQUEST)
+        serializer = PlaceSerializer(place, data = request.data, partial = True)
+        serializer.is_valid(raise_exception = True)
+        serializer.save()
+        return Response(serializer.data, status = status.HTTP_200_OK)
+    
     def delete(self, request, id):
-        place= Place.objects.get(id=id)
+        place = Place.objects.get(id = id)
         place.delete()
-        return Response({"message": "Eliminado correctamente"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"msg": "Lugar eliminado correctamente"}, status = status.HTTP_204_NO_CONTENT)
+        
