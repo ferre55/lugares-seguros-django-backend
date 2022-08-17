@@ -33,3 +33,5 @@ class CommentPlaceListSerializer(serializers.ModelSerializer):
             'comment',
             'created',
         )
+
+    
